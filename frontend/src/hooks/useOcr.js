@@ -10,7 +10,7 @@ export function useOcr() {
   const [pageCount, setPageCount] = useState(0);
   const [processingStep, setProcessingStep] = useState("");
 
-  const processSearchableDoc = useCallback(async (file, lang = "en") => {
+  const processSearchableDoc = useCallback(async (file) => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -20,7 +20,7 @@ export function useOcr() {
 
     try {
       setProcessingStep("Running OCR...");
-      const data = await uploadForSearchableDoc(file, lang);
+      const data = await uploadForSearchableDoc(file);
       setProcessingStep("Generating searchable DOC...");
 
       setResult(data.text || "");

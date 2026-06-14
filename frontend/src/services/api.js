@@ -7,10 +7,9 @@ const apiClient = axios.create({
   timeout: 300000,
 });
 
-export async function uploadForSearchableDoc(file, lang = "en") {
+export async function uploadForSearchableDoc(file) {
   const formData = new FormData();
   formData.append("file", file);
-  formData.append("lang", lang);
 
   const { data } = await apiClient.post("/api/searchable-doc", formData, {
     headers: { "Content-Type": "multipart/form-data" },

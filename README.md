@@ -150,19 +150,26 @@ If downloads fail, download the models manually from https://huggingface.co/SWHL
 
 ### Frontend (Vercel)
 
+1. Push the repo to GitHub
+2. On Vercel, import the repo — set **Root Directory** to `frontend`
+3. Set environment variable: `VITE_API_URL` = your backend URL
+4. Deploy
+
+Or manually:
+
 ```bash
 cd frontend
 npm install && npm run build
 npx vercel --prod
 ```
 
-Set `VITE_API_URL` to your backend URL.
-
 ### Backend
 
-1. Create a Node.js web service
-2. Build command: `npm install && npm run setup-models`
-3. Start command: `node server.js`
+Deploy as a Node.js service (Railway, Render, Fly.io, etc.):
+
+- Build command: `npm install && npm run setup-models`
+- Start command: `node server.js`
+- Set `PORT`, `CORS_ORIGIN`, `UPLOAD_DIR`, `GENERATED_DIR` as needed
 
 ## Performance Notes
 
