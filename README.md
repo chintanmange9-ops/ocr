@@ -137,14 +137,25 @@ If downloads fail, download the models manually from https://huggingface.co/SWHL
 
 ## Environment Variables
 
+### Frontend (`frontend/.env`)
+
+| Variable         | Default                    | Description                              |
+| ---------------- | -------------------------- | ---------------------------------------- |
+| `VITE_API_URL`   | `http://localhost:5000`    | Backend URL (change for deployment)      |
+
 ### Backend (`backend/.env`)
 
-| Variable       | Default                    | Description              |
-| -------------- | -------------------------- | ------------------------ |
-| `PORT`         | `5000`                     | Server port              |
-| `CORS_ORIGIN`  | `http://localhost:5173`    | Allowed CORS origin      |
-| `UPLOAD_DIR`   | `uploads`                  | Temp upload directory    |
-| `GENERATED_DIR`| `generated`                | Output PDF directory     |
+| Variable         | Default                    | Description                              |
+| ---------------- | -------------------------- | ---------------------------------------- |
+| `PORT`           | `5000`                     | Server port                              |
+| `CORS_ORIGIN`    | `http://localhost:5173`    | Frontend URL (change for deployment)     |
+| `NODE_ENV`       | `development`              | Environment mode                         |
+| `UPLOAD_DIR`     | `uploads`                  | Temp upload directory                    |
+| `GENERATED_DIR`  | `generated`                | Output PDF directory                     |
+
+For production, update both `.env` files:
+- **Frontend**: `VITE_API_URL` → your deployed backend URL
+- **Backend**: `CORS_ORIGIN` → your deployed frontend URL
 
 ## Deployment
 
@@ -152,7 +163,7 @@ If downloads fail, download the models manually from https://huggingface.co/SWHL
 
 1. Push the repo to GitHub
 2. On Vercel, import the repo — set **Root Directory** to `frontend`
-3. Set environment variable: `VITE_API_URL` = your backend URL
+3. Set env var: `VITE_API_URL` = your backend URL
 4. Deploy
 
 Or manually:
@@ -169,7 +180,7 @@ Deploy as a Node.js service (Railway, Render, Fly.io, etc.):
 
 - Build command: `npm install && npm run setup-models`
 - Start command: `node server.js`
-- Set `PORT`, `CORS_ORIGIN`, `UPLOAD_DIR`, `GENERATED_DIR` as needed
+- Env vars: update `CORS_ORIGIN` to match your frontend URL
 
 ## Performance Notes
 
