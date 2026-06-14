@@ -1,87 +1,48 @@
-import React, { useState, useCallback } from "react";
 import Header from "./components/Header";
-import FileUploader from "./components/FileUploader";
-import Preview from "./components/Preview";
-import ResultViewer from "./components/ResultViewer";
+import UploadScreen from "./components/UploadScreen";
+import ConfigScreen from "./components/ConfigScreen";
 import ProgressIndicator from "./components/ProgressIndicator";
+import SuccessScreen from "./components/SuccessScreen";
 import Notification from "./components/Notification";
 import { useOcr } from "./hooks/useOcr";
 import "./index.css";
 
 export default function App() {
   const {
-    result, loading, error, fileName, downloadUrl, pageCount, processingStep,
-    processSearchableDoc, reset,
+    step, files, downloadUrl, error,
+    addFile, removeFile, handleFileSelected, handleBack, handleApplyOcr,
   } = useOcr();
-
-  const [notification, setNotification] = useState(null);
-  const [currentFile, setCurrentFile] = useState(null);
-
-  const showNotification = useCallback((type, message) => {
-    setNotification({ type, message });
-  }, []);
-
-  const handleFileSelect = useCallback(async (file) => {
-    setCurrentFile(file);
-
-    const outcome = await processSearchableDoc(file);
-
-    if (outcome.success) {
-      showNotification("success", "Searchable DOC ready for download!");
-    } else {
-      showNotification("error", outcome.error);
-    }
-  }, [processSearchableDoc, showNotification]);
-
-  const handleReset = useCallback(() => {
-    reset();
-    setCurrentFile(null);
-    setNotification(null);
-  }, [reset]);
-
-  const hasResult = downloadUrl || result;
 
   return (
     <div className="app">
       <Header />
 
-      <Notification
-        type={notification?.type}
-        message={notification?.message}
-        onClose={() => setNotification(null)}
-      />
+      {error && (
+        <Notification type="error" message={error} onClose={() => {}} />
+      )}
 
-      <main className="main-content">
-        <div className="container">
-          <div className="card">
-            <FileUploader onFileSelect={handleFileSelect} loading={loading} />
+      {step === "upload" && (
+        <UploadScreen onFileSelected={handleFileSelected} />
+      )}
 
-            {currentFile && !loading && !hasResult && (
-              <Preview file={currentFile} />
-            )}
+      {step === "config" && (
+        <ConfigScreen
+          files={files}
+          onAddFile={addFile}
+          onRemoveFile={removeFile}
+          onBack={handleBack}
+          onApplyOcr={handleApplyOcr}
+        />
+      )}
 
-            {loading && (
-              <ProgressIndicator fileName={fileName} step={processingStep} />
-            )}
+      {step === "processing" && <ProgressIndicator />}
 
-            {hasResult && (
-              <ResultViewer
-                text={result}
-                downloadUrl={downloadUrl}
-                pageCount={pageCount}
-                fileName={fileName}
-                onReset={handleReset}
-              />
-            )}
-          </div>
-
-          <div className="info-bar">
-            <p>
-              Files are processed in memory and never stored permanently
-            </p>
-          </div>
-        </div>
-      </main>
+      {step === "success" && (
+        <SuccessScreen
+          downloadUrl={downloadUrl || null}
+          onBack={handleBack}
+        />
+      )}
     </div>
   );
 }

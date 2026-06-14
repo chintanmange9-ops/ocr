@@ -11,6 +11,8 @@ uploads/*
 backend/generated/*
 !backend/generated/.gitkeep
 
+img/
+
 __pycache__/
 *.pyc
 .DS_Store
