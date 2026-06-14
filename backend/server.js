@@ -9,7 +9,6 @@ const { cleanupOldFiles } = require("./utils/cleanup");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const CORS_ORIGIN = process.env.CORS_ORIGIN || "http://localhost:5173";
 const UPLOAD_DIR = process.env.UPLOAD_DIR || "uploads";
 const GENERATED_DIR = process.env.GENERATED_DIR || "generated";
 
@@ -20,7 +19,12 @@ for (const dir of [UPLOAD_DIR, GENERATED_DIR]) {
   }
 }
 
-app.use(cors({ origin: CORS_ORIGIN }));
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://ocr-beta-mauve.vercel.app"
+  ]
+}));
 app.use(express.json());
 
 app.use("/api", searchableDocRoutes);
@@ -69,5 +73,4 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`Backend running on http://localhost:${PORT}`);
-  console.log(`CORS origin: ${CORS_ORIGIN}`);
 });

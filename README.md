@@ -148,14 +148,13 @@ If downloads fail, download the models manually from https://huggingface.co/SWHL
 | Variable         | Default                    | Description                              |
 | ---------------- | -------------------------- | ---------------------------------------- |
 | `PORT`           | `5000`                     | Server port                              |
-| `CORS_ORIGIN`    | `http://localhost:5173`    | Frontend URL (change for deployment)     |
 | `NODE_ENV`       | `development`              | Environment mode                         |
 | `UPLOAD_DIR`     | `uploads`                  | Temp upload directory                    |
 | `GENERATED_DIR`  | `generated`                | Output PDF directory                     |
 
-For production, update both `.env` files:
-- **Frontend**: `VITE_API_URL` → your deployed backend URL
-- **Backend**: `CORS_ORIGIN` → your deployed frontend URL
+CORS is configured to allow both `http://localhost:5173` (dev) and `https://ocr-beta-mauve.vercel.app` (production) directly in `server.js`. No env var needed.
+
+For production, update `VITE_API_URL` in your frontend deployment.
 
 ## Deployment
 
@@ -180,7 +179,7 @@ Deploy as a Node.js service (Railway, Render, Fly.io, etc.):
 
 - Build command: `npm install && npm run setup-models`
 - Start command: `node server.js`
-- Env vars: update `CORS_ORIGIN` to match your frontend URL
+- Set `PORT` as needed (Railway uses `PORT` env var automatically)
 
 ## Performance Notes
 
