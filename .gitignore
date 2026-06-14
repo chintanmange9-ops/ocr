@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.env
+*.log
+uploads/*
+!uploads/.gitkeep
+backend/generated/*
+!backend/generated/.gitkeep
+backend/models/*
+!backend/models/.gitkeep
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+*.egg-info/
+.pytest_cache/
