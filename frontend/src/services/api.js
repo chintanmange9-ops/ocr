@@ -11,12 +11,7 @@ export async function uploadForSearchableDoc(file) {
   const formData = new FormData();
   formData.append("file", file);
 
-  const { data } = await apiClient.post("/api/searchable-doc", formData, {
-    headers: { "Content-Type": "multipart/form-data" },
-    onUploadProgress: (event) => {
-      const pct = Math.round((event.loaded * 100) / event.total);
-    },
-  });
+  const { data } = await apiClient.post("/api/searchable-doc", formData);
 
   return data;
 }
