@@ -59,14 +59,17 @@ router.post("/searchable-doc", (req, res) => {
 
       if (isPdf) {
         const pageImages = await pdfToImages(filePath);
-        const allPageResults = [];
-        let fullText = "";
 
-        for (const page of pageImages) {
-          const { results, fullText: pageText } = await runOcr(page.imageBuffer);
-          allPageResults.push({ imageBuffer: page.imageBuffer, results });
-          if (pageText) fullText += (fullText ? "\n\n" : "") + pageText;
-        }
+        const pageResults = await Promise.all(
+          pageImages.map(page => runOcr(page.imageBuffer))
+        );
+
+        const allPageResults = pageImages.map((page, i) => ({
+          imageBuffer: page.imageBuffer,
+          results: pageResults[i].results,
+        }));
+
+        const fullText = pageResults.map(r => r.fullText).filter(Boolean).join("\n\n");
 
         await generateMultiPageSearchableDoc(allPageResults, pdfOutputPath);
 
