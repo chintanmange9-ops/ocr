@@ -1,7 +1,14 @@
 const sharp = require('sharp');
+const fs = require('fs');
 
-async function loadImageAsRGB(imagePath) {
-  const sharpImg = sharp(imagePath);
+function resolveInput(input) {
+  if (Buffer.isBuffer(input)) return input;
+  return fs.readFileSync(input);
+}
+
+async function loadImageAsRGB(input) {
+  const buf = resolveInput(input);
+  const sharpImg = sharp(buf);
   const metadata = await sharpImg.metadata();
   const { data } = await sharpImg
     .ensureAlpha()
@@ -16,7 +23,7 @@ async function loadImageAsRGB(imagePath) {
     bgr[i * 3 + 1] = data[i * 4 + 1];
     bgr[i * 3 + 2] = data[i * 4];
   }
-  return { data: bgr, width: w, height: h };
+  return { data: bgr, width: w, height: h, buffer: buf };
 }
 
 function hwcToChw(data, w, h) {
@@ -70,8 +77,9 @@ function resizeToMulti32(w, h) {
   return { width: newW, height: newH };
 }
 
-async function resizeImage(imagePath, targetW, targetH) {
-  const { data } = await sharp(imagePath)
+async function resizeImage(input, targetW, targetH) {
+  const buf = resolveInput(input);
+  const { data } = await sharp(buf)
     .resize(targetW, targetH, { fit: 'fill' })
     .ensureAlpha()
     .raw()
@@ -86,7 +94,7 @@ async function resizeImage(imagePath, targetW, targetH) {
   return { data: bgr, width: targetW, height: targetH };
 }
 
-async function cropRegion(imagePath, bbox, targetH = 48) {
+async function cropRegion(input, bbox, targetH = 48) {
   const [x1, y1, x2, y2] = bbox;
   const bw = Math.max(x2 - x1, 2);
   const bh = Math.max(y2 - y1, 2);
@@ -97,7 +105,8 @@ async function cropRegion(imagePath, bbox, targetH = 48) {
   let cropW = Math.round(bw + pad * 2);
   let cropH = Math.round(bh + pad * 2);
 
-  const meta = await sharp(imagePath).metadata();
+  const buf = resolveInput(input);
+  const meta = await sharp(buf).metadata();
   if (cropLeft + cropW > meta.width) cropW = meta.width - cropLeft;
   if (cropTop + cropH > meta.height) cropH = meta.height - cropTop;
   if (cropW < 2 || cropH < 2) return { data: Buffer.alloc(targetH * 8 * 3), width: 8, height: targetH };
@@ -106,7 +115,7 @@ async function cropRegion(imagePath, bbox, targetH = 48) {
   let targetW = Math.max(8, Math.round(targetH * aspect));
   targetW = Math.max(8, Math.round(targetW / 8) * 8);
 
-  const { data } = await sharp(imagePath)
+  const { data } = await sharp(buf)
     .extract({ left: cropLeft, top: cropTop, width: cropW, height: cropH })
     .resize(targetW, targetH, { fit: 'fill' })
     .ensureAlpha()

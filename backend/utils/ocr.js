@@ -62,14 +62,16 @@ function sortReadingOrder(results) {
   return left.concat(right);
 }
 
-async function runOcr(imagePath) {
+async function runOcr(input) {
   await ensureModels();
 
-  const boxes = await detector.detect(imagePath);
+  const imageBuffer = Buffer.isBuffer(input) ? input : fs.readFileSync(input);
+
+  const { boxes, imageBuffer: bufFromDetect } = await detector.detect(imageBuffer);
 
   const results = [];
   for (const bbox of boxes) {
-    const text = await recognizer.recognize(imagePath, bbox);
+    const text = await recognizer.recognize(bufFromDetect, bbox);
     if (text.length > 0) {
       results.push({ bbox, text, confidence: 1.0 });
     }

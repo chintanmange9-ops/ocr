@@ -9,7 +9,7 @@ import "./index.css";
 
 export default function App() {
   const {
-    step, files, downloadUrl, error,
+    step, files, downloadUrl, error, clearError,
     addFile, removeFile, handleFileSelected, handleBack, handleApplyOcr,
   } = useOcr();
 
@@ -18,7 +18,7 @@ export default function App() {
       <Header />
 
       {error && (
-        <Notification type="error" message={error} onClose={() => {}} />
+        <Notification type="error" message={error} onClose={clearError} />
       )}
 
       {step === "upload" && (

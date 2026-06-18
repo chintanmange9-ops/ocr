@@ -1,5 +1,6 @@
 const ort = require('onnxruntime-node');
 const preproc = require('./preprocess');
+const fs = require('fs');
 
 class TextDetector {
   constructor(modelPath) {
@@ -11,10 +12,11 @@ class TextDetector {
     this.session = await ort.InferenceSession.create(this.modelPath);
   }
 
-  async detect(imagePath) {
-    const img = await preproc.loadImageAsRGB(imagePath);
+  async detect(input) {
+    const fileBuffer = Buffer.isBuffer(input) ? input : fs.readFileSync(input);
+    const img = await preproc.loadImageAsRGB(fileBuffer);
     const target = preproc.resizeToMulti32(img.width, img.height);
-    const resized = await preproc.resizeImage(imagePath, target.width, target.height);
+    const resized = await preproc.resizeImage(fileBuffer, target.width, target.height);
 
     const scaleX = img.width / target.width;
     const scaleY = img.height / target.height;
@@ -48,7 +50,7 @@ class TextDetector {
     ]);
 
     const merged = this._nms(boxes, 0.5);
-    return merged;
+    return { boxes: merged, imageBuffer: fileBuffer, width: img.width, height: img.height };
   }
 
   _postProcess(heatmap, w, h) {

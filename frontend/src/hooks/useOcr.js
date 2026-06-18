@@ -88,8 +88,10 @@ export function useOcr() {
     }
   }, [files]);
 
+  const clearError = useCallback(() => setError(null), []);
+
   return {
-    step, files, downloadUrl, error,
+    step, files, downloadUrl, error, clearError,
     addFile, removeFile, handleFileSelected, handleBack, handleApplyOcr,
   };
 }

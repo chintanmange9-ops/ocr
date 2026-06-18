@@ -3,8 +3,6 @@ import DocumentCard from "./DocumentCard";
 import SettingsSidebar from "./SettingsSidebar";
 
 export default function ConfigScreen({ files, onAddFile, onRemoveFile, onBack, onApplyOcr }) {
-  const addInputRef = null;
-
   const handleClickAdd = () => {
     const input = document.createElement("input");
     input.type = "file";

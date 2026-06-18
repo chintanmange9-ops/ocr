@@ -14,15 +14,14 @@ class TextRecognizer {
     this.session = await ort.InferenceSession.create(this.modelPath);
     const content = fs.readFileSync(this.charDictPath, 'utf-8');
     const raw = content.split(/\r?\n/);
-    // Match RapidOCR: strip trailing empty line, then insert space at end, blank at 0
     if (raw[raw.length - 1] === '') raw.pop();
-    raw.push(' ');                // space at index 95 (last)
-    raw.unshift('blank');         // blank at index 0
-    this.charList = raw;          // 97 entries: [blank,0,1,...,~, ]
+    raw.push(' ');
+    raw.unshift('blank');
+    this.charList = raw;
   }
 
-  async recognize(imagePath, bbox) {
-    const crop = await preproc.cropRegion(imagePath, bbox);
+  async recognize(imageBuffer, bbox) {
+    const crop = await preproc.cropRegion(imageBuffer, bbox);
     const chw = preproc.hwcToChw(crop.data, crop.width, crop.height);
     const normalized = preproc.normalizeRecognition(chw, crop.width, crop.height);
 
